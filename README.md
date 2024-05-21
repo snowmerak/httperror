@@ -58,6 +58,12 @@ func main() {
 			log.Printf("[ERR] %v", err)
 			return
 		}
+		
+		// or one line calling
+		// if _, err := httperror.New("just error", http.StatusNotImplemented, "http://localhost:8080/error/501").WithInstance(request.URL.Path).WithDetail("this service is not implemented").WriteToHttpResponseWriter(writer, nil); err != nil {
+		// 	 log.Printf("[ERR] %v", err)
+		// 	 return
+		// }
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
