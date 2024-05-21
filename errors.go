@@ -86,16 +86,15 @@ func (e *HttpError) ToJSON(marshal func(any) ([]byte, error)) ([]byte, error) {
 	builder.WriteString("\"" + e.Instance + "\"")
 
 	for k, v := range e.ExtensionMembers {
-		builder.WriteString(",")
+		builder.WriteString(",\"")
 		builder.WriteString(k)
-		builder.WriteString(":")
+		builder.WriteString("\":")
 		d, err := marshal(v)
 		if err != nil {
 			return nil, fmt.Errorf("cannot marshal extension member %s: %w", k, err)
 		}
 
 		builder.WriteString(string(d))
-		builder.WriteString(",")
 	}
 
 	builder.WriteString("}")
