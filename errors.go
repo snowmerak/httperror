@@ -45,6 +45,12 @@ func (e *HttpError) WithInstance(instance string) *HttpError {
 	return e
 }
 
+// WithExtensionMember : Add extension member.
+func (e *HttpError) WithExtensionMember(key string, value any) *HttpError {
+	e.ExtensionMembers[key] = value
+	return e
+}
+
 func (e *HttpError) Error() string {
 	builder := strings.Builder{}
 	builder.WriteString(e.Title)
