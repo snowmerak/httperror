@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+const (
+	MimeApplicationProblemJson = "application/problem+json"
+)
+
 /*
 HttpError is error type of http.
 This is maybe RFC7807(https://datatracker.ietf.org/doc/html/rfc7807).
@@ -161,7 +165,7 @@ func (e *HttpError) WriteToHttpResponseWriter(w http.ResponseWriter, marshal fun
 		return 0, fmt.Errorf("cannot marshal http error: %w", err)
 	}
 
-	w.Header().Set("Content-Type", "application/problem+json")
+	w.Header().Set("Content-Type", MimeApplicationProblemJson)
 	w.WriteHeader(e.Status)
 
 	n, err := w.Write(data)
