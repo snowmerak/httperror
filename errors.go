@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -129,4 +131,42 @@ func FromJSON(data []byte, unmarshal func([]byte, any) error) (*HttpError, error
 	he.ExtensionMembers = v
 
 	return he, nil
+}
+
+func (e *HttpError) WriteTo(w io.Writer, marshal func(any) ([]byte, error)) (int, error) {
+	if w == nil {
+		return 0, fmt.Errorf("writer is nil")
+	}
+
+	data, err := e.ToJSON(marshal)
+	if err != nil {
+		return 0, fmt.Errorf("cannot marshal http error: %w", err)
+	}
+
+	n, err := w.Write(data)
+	if err != nil {
+		return 0, fmt.Errorf("cannot write http error: %w", err)
+	}
+
+	return n, nil
+}
+
+func (e *HttpError) WriteToHttpResponseWriter(w http.ResponseWriter, marshal func(any) ([]byte, error)) (int, error) {
+	if w == nil {
+		return 0, fmt.Errorf("response writer is nil")
+	}
+
+	data, err := e.ToJSON(marshal)
+	if err != nil {
+		return 0, fmt.Errorf("cannot marshal http error: %w", err)
+	}
+
+	n, err := w.Write(data)
+	if err != nil {
+		return 0, fmt.Errorf("cannot write http error: %w", err)
+	}
+	w.Header().Set("Content-Type", "application/problem+json")
+	w.WriteHeader(e.Status)
+
+	return n, nil
 }
