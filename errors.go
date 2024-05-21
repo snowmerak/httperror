@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 /*
@@ -42,6 +43,17 @@ func (e *HttpError) WithDetail(detail string) *HttpError {
 func (e *HttpError) WithInstance(instance string) *HttpError {
 	e.Instance = instance
 	return e
+}
+
+func (e *HttpError) Error() string {
+	builder := strings.Builder{}
+	builder.WriteString(e.Title)
+	builder.WriteString(" on ")
+	builder.WriteString(e.Instance)
+	builder.WriteString(" reference ")
+	builder.WriteString(e.Type)
+
+	return builder.String()
 }
 
 func (e *HttpError) ToJSON(marshal func(any) ([]byte, error)) ([]byte, error) {
@@ -106,7 +118,7 @@ func FromJSON(data []byte, unmarshal func([]byte, any) error) (*HttpError, error
 	delete(v, "type")
 	delete(v, "detail")
 	delete(v, "instance")
-	
+
 	he.ExtensionMembers = v
 
 	return he, nil
