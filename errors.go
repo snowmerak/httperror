@@ -161,12 +161,14 @@ func (e *HttpError) WriteToHttpResponseWriter(w http.ResponseWriter, marshal fun
 		return 0, fmt.Errorf("cannot marshal http error: %w", err)
 	}
 
-	n, err := w.Write(data)
-	if err != nil {
-		return 0, fmt.Errorf("cannot write http error: %w", err)
-	}
 	w.Header().Set("Content-Type", "application/problem+json")
 	w.WriteHeader(e.Status)
+
+	n, err := w.Write(data)
+	if err != nil {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		return 0, fmt.Errorf("cannot write http error: %w", err)
+	}
 
 	return n, nil
 }
