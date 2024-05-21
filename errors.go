@@ -27,9 +27,10 @@ type HttpError struct {
 // type url: A URI reference that identifies the problem type. This specification encourages that, when dereferenced, it provide human-readable documentation for the problem type.
 func New(title string, status int, typeUrl string) *HttpError {
 	return &HttpError{
-		Title:  title,
-		Type:   typeUrl,
-		Status: status,
+		Title:            title,
+		Type:             typeUrl,
+		Status:           status,
+		ExtensionMembers: map[string]any{},
 	}
 }
 
@@ -85,6 +86,7 @@ func (e *HttpError) ToJSON(marshal func(any) ([]byte, error)) ([]byte, error) {
 	builder.WriteString("\"" + e.Instance + "\"")
 
 	for k, v := range e.ExtensionMembers {
+		builder.WriteString(",")
 		builder.WriteString(k)
 		builder.WriteString(":")
 		d, err := marshal(v)
